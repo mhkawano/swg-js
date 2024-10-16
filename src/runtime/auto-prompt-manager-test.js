@@ -386,7 +386,7 @@ describes.realWin('AutoPromptManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.TIMESTAMPS, /* useLocalStorage */ true)
-        .resolves('')
+        .returns('')
         .once();
       storageMock
         .expects('set')
@@ -401,7 +401,7 @@ describes.realWin('AutoPromptManager', (env) => {
           }),
           /* useLocalStorage */ true
         )
-        .resolves(null)
+        .returns(null)
         .once();
 
       await autoPromptManager.storeImpression('TYPE_REWARDED_SURVEY');
@@ -526,7 +526,7 @@ describes.realWin('AutoPromptManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.TIMESTAMPS, /* useLocalStorage */ true)
-        .resolves('')
+        .returns('')
         .once();
       storageMock
         .expects('set')
@@ -541,7 +541,7 @@ describes.realWin('AutoPromptManager', (env) => {
           }),
           /* useLocalStorage */ true
         )
-        .resolves(null)
+        .returns(null)
         .once();
 
       await autoPromptManager.storeDismissal('TYPE_REWARDED_SURVEY');
@@ -704,7 +704,7 @@ describes.realWin('AutoPromptManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.TIMESTAMPS, /* useLocalStorage */ true)
-        .resolves('')
+        .returns('')
         .once();
       storageMock
         .expects('set')
@@ -719,7 +719,7 @@ describes.realWin('AutoPromptManager', (env) => {
           }),
           /* useLocalStorage */ true
         )
-        .resolves(null)
+        .returns(null)
         .once();
 
       await autoPromptManager.storeCompletion('TYPE_REWARDED_SURVEY');
@@ -5188,7 +5188,7 @@ describes.realWin('AutoPromptManager', (env) => {
     storageMock
       .expects('get')
       .withExactArgs(StorageKeys.TIMESTAMPS, /* useLocalStorage */ true)
-      .resolves(get);
+      .returns(get);
     if (set != undefined) {
       set = JSON.stringify(
         Object.entries(set).reduce((acc, [key, values]) => {
@@ -5206,7 +5206,7 @@ describes.realWin('AutoPromptManager', (env) => {
       storageMock
         .expects('set')
         .withExactArgs(StorageKeys.TIMESTAMPS, set, /* useLocalStorage */ true)
-        .resolves(null)
+        .returns(null)
         .once();
     }
   }

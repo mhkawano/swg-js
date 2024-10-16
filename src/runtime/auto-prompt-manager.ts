@@ -831,7 +831,7 @@ export class AutoPromptManager {
    * Timestamps are not necessarily sorted.
    */
   async getTimestamps(): Promise<ActionsTimestamps> {
-    const stringified = await this.storage_.get(
+    const stringified = this.storage_.get(
       StorageKeys.TIMESTAMPS,
       /* useLocalStorage */ true
     );

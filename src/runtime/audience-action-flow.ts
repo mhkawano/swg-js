@@ -355,7 +355,7 @@ export class AudienceActionIframeFlow implements AudienceActionFlow {
     const isPpsEligible = request.getStorePpsInLocalStorage();
 
     if (isPpsEligible) {
-      await this.storePpsValuesFromSurveyAnswers(request);
+      this.storePpsValuesFromSurveyAnswers(request);
     }
 
     surveyDataTransferResponse.setSuccess(dataTransferSuccess);
@@ -389,9 +389,9 @@ export class AudienceActionIframeFlow implements AudienceActionFlow {
    * Populates localStorage with PPS configuration parameters based on
    * SurveyDataTransferRequest.
    **/
-  private async storePpsValuesFromSurveyAnswers(
+  private storePpsValuesFromSurveyAnswers(
     request: SurveyDataTransferRequest
-  ): Promise<void> {
+  ): void {
     const iabAudienceKey = StorageKeysWithoutPublicationIdSuffix.PPS_TAXONOMIES;
     // PPS value field is optional and category may not be populated
     // in accordance to IAB taxonomies.
@@ -401,7 +401,7 @@ export class AudienceActionIframeFlow implements AudienceActionFlow {
       .map((answer) => answer?.getPpsValue())
       .filter((ppsValue) => ppsValue !== null);
 
-    const existingIabTaxonomy = await this.storage_.get(
+    const existingIabTaxonomy = this.storage_.get(
       iabAudienceKey,
       /* useLocalStorage= */ true
     );
@@ -424,12 +424,10 @@ export class AudienceActionIframeFlow implements AudienceActionFlow {
       [Constants.PPS_AUDIENCE_TAXONOMY_KEY]: {values: iabTaxonomyValues},
     };
 
-    await Promise.resolve(
-      this.storage_.set(
-        iabAudienceKey,
-        JSON.stringify(iabTaxonomy),
-        /* useLocalStorage= */ true
-      )
+    this.storage_.set(
+      iabAudienceKey,
+      JSON.stringify(iabTaxonomy),
+      /* useLocalStorage= */ true
     );
     // TODO(caroljli): clearcut event logging
   }

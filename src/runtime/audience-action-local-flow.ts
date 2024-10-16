@@ -686,9 +686,7 @@ export class AudienceActionLocalFlow implements AudienceActionFlow {
     if (!!this.params_.shouldRenderPreview) {
       return;
     }
-    const swgUserToken = await this.deps_
-      .storage()
-      .get(StorageKeys.USER_TOKEN, true);
+    const swgUserToken = this.deps_.storage().get(StorageKeys.USER_TOKEN, true);
     const queryParams = [
       // TODO: mhkawano - check and error out if swgUserToken is null
       ['sut', swgUserToken!],
@@ -709,12 +707,12 @@ export class AudienceActionLocalFlow implements AudienceActionFlow {
     if (response.updated) {
       this.entitlementsManager_.clear();
       if (response.swgUserToken) {
-        await this.deps_
+        this.deps_
           .storage()
           .set(StorageKeys.USER_TOKEN, response.swgUserToken, true);
       }
       const now = Date.now().toString();
-      await this.deps_
+      this.deps_
         .storage()
         .set(StorageKeys.READ_TIME, now, /*useLocalStorage=*/ false);
       await this.entitlementsManager_.getEntitlements();

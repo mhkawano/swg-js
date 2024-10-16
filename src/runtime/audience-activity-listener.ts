@@ -86,7 +86,7 @@ export class AudienceActivityEventListener {
     }
 
     // Bail if SUT is unavailable.
-    const swgUserToken = await this.storage_.get(StorageKeys.USER_TOKEN, true);
+    const swgUserToken = this.storage_.get(StorageKeys.USER_TOKEN, true);
     if (!swgUserToken) {
       return;
     }

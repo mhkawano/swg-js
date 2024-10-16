@@ -64,7 +64,7 @@ describes.realWin('AudienceActivityEventListener', (env) => {
     storageMock
       .expects('get')
       .withExactArgs(StorageKeys.USER_TOKEN, true)
-      .resolves('ab+c').once;
+      .returns('ab+c').once;
     audienceActivityEventListener.start();
 
     // This triggers an event.
@@ -89,7 +89,7 @@ describes.realWin('AudienceActivityEventListener', (env) => {
     storageMock
       .expects('get')
       .withExactArgs(StorageKeys.USER_TOKEN, true)
-      .resolves(null).once;
+      .returns(null).once;
     audienceActivityEventListener.start();
 
     // This triggers an event.

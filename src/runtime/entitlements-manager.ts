@@ -372,7 +372,7 @@ export class EntitlementsManager {
     }
 
     // Get swgUserToken from local storage
-    const swgUserToken = await this.storage_.get(StorageKeys.USER_TOKEN, true);
+    const swgUserToken = this.storage_.get(StorageKeys.USER_TOKEN, true);
     if (swgUserToken) {
       url = addQueryParam(url, 'sut', swgUserToken);
     }
@@ -396,8 +396,8 @@ export class EntitlementsManager {
   private async fetchEntitlementsWithCaching_(
     params?: GetEntitlementsParamsExternalDef
   ): Promise<Entitlements> {
-    const raw = await this.storage_.get(StorageKeys.ENTITLEMENTS);
-    const irtp = await this.storage_.get(StorageKeys.IS_READY_TO_PAY);
+    const raw = this.storage_.get(StorageKeys.ENTITLEMENTS);
+    const irtp = this.storage_.get(StorageKeys.IS_READY_TO_PAY);
 
     // Try cache first.
     const needsDecryption = !!(params && params.encryption);
@@ -687,7 +687,7 @@ export class EntitlementsManager {
     this.deps_.eventManager().logSwgEvent(eventType, false, params);
 
     // Check if storage bit is set. It's only set by the `Entitlements.ack` method.
-    const toastWasShown = (await this.storage_.get(StorageKeys.TOAST)) === '1';
+    const toastWasShown = this.storage_.get(StorageKeys.TOAST) === '1';
     if (toastWasShown) {
       return;
     }
@@ -767,10 +767,10 @@ export class EntitlementsManager {
     params?: GetEntitlementsParamsExternalDef
   ): Promise<Entitlements> {
     // Get swgUserToken from local storage
-    const swgUserToken = await this.storage_.get(StorageKeys.USER_TOKEN, true);
+    const swgUserToken = this.storage_.get(StorageKeys.USER_TOKEN, true);
 
     // Get read_time from session storage
-    const readTime = await this.storage_.get(
+    const readTime = this.storage_.get(
       StorageKeys.READ_TIME,
       /*useLocalStorage=*/ false
     );

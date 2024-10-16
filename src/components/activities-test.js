@@ -56,7 +56,7 @@ describes.realWin('Activity Components', (env) => {
       pageConfig: () => pageConfig,
       doc: () => doc,
       eventManager: () => eventManager,
-      storage: () => ({get: () => Promise.resolve(TOKEN)}),
+      storage: () => ({get: () => TOKEN}),
       creationTimestamp: () => 0,
     };
     activityPorts = new ActivityPorts(deps);
@@ -265,7 +265,7 @@ describes.realWin('Activity Components', (env) => {
       });
 
       it('does not add sut if it does not exist', async () => {
-        deps.storage = () => ({get: () => Promise.resolve(null)});
+        deps.storage = () => ({get: () => null});
         const callMock = sandbox
           .mock(activityPorts, 'openActivityIframePort_')
           .expects('openActivityIframePort_')

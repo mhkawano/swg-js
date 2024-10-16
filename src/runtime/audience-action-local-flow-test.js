@@ -702,7 +702,7 @@ describes.realWin('AudienceActionLocalFlow', (env) => {
         storageMock
           .expects('get')
           .withArgs(StorageKeys.USER_TOKEN)
-          .resolves('abc')
+          .returns('abc')
           .exactly(1);
         storageMock.expects('set').withArgs(StorageKeys.USER_TOKEN).exactly(1);
         storageMock.expects('set').withArgs(StorageKeys.READ_TIME).exactly(1);
@@ -738,7 +738,7 @@ describes.realWin('AudienceActionLocalFlow', (env) => {
         storageMock
           .expects('get')
           .withArgs(StorageKeys.USER_TOKEN)
-          .resolves('abc')
+          .returns('abc')
           .exactly(1);
         storageMock.expects('set').never();
 
@@ -772,7 +772,7 @@ describes.realWin('AudienceActionLocalFlow', (env) => {
         storageMock
           .expects('get')
           .withArgs(StorageKeys.USER_TOKEN)
-          .resolves('abc')
+          .returns('abc')
           .exactly(1);
         storageMock.expects('set').withArgs(StorageKeys.USER_TOKEN).never();
         storageMock.expects('set').withArgs(StorageKeys.READ_TIME).exactly(1);
@@ -1252,7 +1252,7 @@ describes.realWin('AudienceActionLocalFlow', (env) => {
         storageMock
           .expects('get')
           .withArgs(StorageKeys.USER_TOKEN)
-          .resolves('abc')
+          .returns('abc')
           .atLeast(0);
         storageMock.expects('set').withArgs(StorageKeys.USER_TOKEN).exactly(1);
         storageMock.expects('set').withArgs(StorageKeys.READ_TIME).exactly(1);

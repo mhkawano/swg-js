@@ -271,7 +271,7 @@ export class ActivityPorts {
       args = this.addDefaultArguments(args);
     }
 
-    const swgUserToken = await this.deps_
+    const swgUserToken = this.deps_
       .storage()
       .get(StorageKeys.USER_TOKEN, /* useLocalStorage= */ true);
 

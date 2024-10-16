@@ -362,22 +362,22 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs('ents')
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs('toast')
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs('isreadytopay')
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.READ_TIME, false)
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
     });
 
@@ -496,7 +496,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.USER_TOKEN, true)
-        .resolves('abc').once;
+        .returns('abc').once;
 
       // getEntitlements params do not include swgUserToken
       const ents = await manager.getEntitlements({
@@ -1999,7 +1999,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.USER_TOKEN, true)
-        .resolves('abc').once;
+        .returns('abc').once;
 
       await manager.getEntitlements();
     });
@@ -2028,7 +2028,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.USER_TOKEN, true)
-        .resolves('abc').once;
+        .returns('abc').once;
 
       await manager.getEntitlements({
         publisherProvidedId: 'publisherProvidedId',
@@ -2071,7 +2071,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.READ_TIME, false)
-        .resolves(LAST_TIME_STRING)
+        .returns(LAST_TIME_STRING)
         .atLeast(1);
       sandbox.useFakeTimers(CURRENT_TIME);
       expectGetSwgUserTokenToBeCalled();
@@ -2101,7 +2101,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.READ_TIME, false)
-        .resolves(LAST_TIME_STRING)
+        .returns(LAST_TIME_STRING)
         .atLeast(1);
       sandbox.useFakeTimers(CURRENT_TIME);
       expectGetSwgUserTokenToBeCalled();
@@ -2526,13 +2526,13 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs('ents')
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
-      storageMock.expects('set').withArgs('ents').resolves().atLeast(0);
+      storageMock.expects('set').withArgs('ents').atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.READ_TIME, false)
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
     });
 
@@ -2541,18 +2541,17 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs('toast')
-        .returns({
-          then: (callback) => {
+        .returns((callback) => {
             callback(value);
           },
-        });
+        );
     }
 
     function expectGetIsReadyToPayToBeCalled(value) {
       storageMock
         .expects('get')
         .withExactArgs('isreadytopay')
-        .resolves(value)
+        .returns(value)
         .once();
     }
 
@@ -2876,12 +2875,12 @@ describes.realWin('EntitlementsManager', (env) => {
   describe('flow with cache', () => {
     beforeEach(() => {
       sandbox.stub(Toast.prototype, 'open');
-      storageMock.expects('get').withArgs('toast').resolves(null).atLeast(0);
-      storageMock.expects('set').withArgs('toast').resolves(null).atLeast(0);
+      storageMock.expects('get').withArgs('toast').returns(null).atLeast(0);
+      storageMock.expects('set').withArgs('toast').returns(null).atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs(StorageKeys.READ_TIME, false)
-        .resolves(null)
+        .returns(null)
         .atLeast(0);
     });
 
@@ -2889,7 +2888,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs('isreadytopay')
-        .resolves(value)
+        .returns(value)
         .atLeast(0);
     }
 
@@ -3068,7 +3067,7 @@ describes.realWin('EntitlementsManager', (env) => {
     it('should not accept empty response in cache', async () => {
       const raw = entitlementsResponse({})['signedEntitlements'];
       expectGetIsReadyToPayToBeCalled(null);
-      storageMock.expects('get').withExactArgs('ents').resolves(raw).once();
+      storageMock.expects('get').withExactArgs('ents').returns(raw).once();
       storageMock.expects('set').withArgs('ents').once();
       expectNonGoogleResponse();
       expectGetSwgUserTokenToBeCalled();
@@ -3088,7 +3087,7 @@ describes.realWin('EntitlementsManager', (env) => {
       storageMock
         .expects('get')
         .withExactArgs('ents')
-        .resolves('VeRy BroKen')
+        .returns('VeRy BroKen')
         .once();
       storageMock.expects('set').withArgs('ents').once();
       expectNonGoogleResponse();
@@ -3108,7 +3107,7 @@ describes.realWin('EntitlementsManager', (env) => {
         products: ['pub1:label1'],
         subscriptionToken: 's1',
       })['signedEntitlements'];
-      storageMock.expects('set').withExactArgs('ents', raw).resolves().once();
+      storageMock.expects('set').withExactArgs('ents', raw).once();
       const res = manager.pushNextEntitlements(raw);
       expect(res).to.be.true;
       manager.reset(true);

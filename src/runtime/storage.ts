@@ -28,24 +28,16 @@ const WEEK_IN_MILLIS = 604800000;
  * src/runtime/local-storage.LocalStorage.
  */
 export class Storage {
-  private readonly win_: Window;
-  private readonly pageConfig_: PageConfig;
-  private readonly values_: {[key: string]: Promise<string | null>};
+  constructor(private win: Window, private pageConfig: PageConfig) {}
 
-  constructor(win: Window, pageConfig: PageConfig) {
-    this.win_ = win;
-    this.pageConfig_ = pageConfig;
-    this.values_ = {};
-  }
-
-  async get(baseKey: string, useLocalStorage = false): Promise<string | null> {
+  get(baseKey: string, useLocalStorage = false): string | null {
     // The old version of storage key without publication identifier.
     // To be deprecated in favor of the new version of key.
     const oldKey = this.getStorageKeyWithoutPublicationId_(baseKey);
     // The new version of storage key with publication identifier.
     const newKey = this.getStorageKeyMaybeWithPublicationId_(baseKey);
 
-    const valueWithNewKey = await this.getInternal_(newKey, useLocalStorage);
+    const valueWithNewKey = this.getInternal_(newKey, useLocalStorage);
     if (valueWithNewKey !== null) {
       return valueWithNewKey;
     } else {
@@ -56,54 +48,43 @@ export class Storage {
   private getInternal_(
     finalKey: string,
     useLocalStorage: boolean
-  ): Promise<string | null> {
-    if (!this.values_[finalKey]) {
-      this.values_[finalKey] = new Promise((resolve) => {
-        const storage = useLocalStorage
-          ? this.win_.localStorage
-          : this.win_.sessionStorage;
-        if (storage) {
-          try {
-            resolve(storage.getItem(finalKey));
-          } catch (e) {
-            // Ignore error.
-            resolve(null);
-          }
-        } else {
-          resolve(null);
-        }
-      });
+  ): string | null {
+    const storage = useLocalStorage
+      ? this.win.localStorage
+      : this.win.sessionStorage;
+    if (storage) {
+      try {
+        return storage.getItem(finalKey);
+      } catch (e) {
+        // Ignore error.
+      }
     }
-    return this.values_[finalKey];
+    return null;
   }
 
-  async set(
-    baseKey: string,
-    value: string,
-    useLocalStorage = false
-  ): Promise<void> {
+  set(baseKey: string, value: string, useLocalStorage = false): void {
     // The old version of storage key without publication identifier.
     // To be deprecated in favor of the new version of key.
     const oldKey = this.getStorageKeyWithoutPublicationId_(baseKey);
     // The new version of storage key with publication identifier.
     const newKey = this.getStorageKeyMaybeWithPublicationId_(baseKey);
-    const valueWithNewKey = await this.getInternal_(newKey, useLocalStorage);
+    const valueWithNewKey = this.getInternal_(newKey, useLocalStorage);
 
     // If a value for the new key already exists, we use the new key even if the
     // experiment is deactivated in the current session.
     if (
       valueWithNewKey !== null ||
       isExperimentOn(
-        this.win_,
+        this.win,
         ExperimentFlags.ENABLE_PUBLICATION_ID_SUFFIX_FOR_STORAGE_KEY
       )
     ) {
       // Remove value stored in the old key for transition from control to
       // experiment treatment.
-      await this.removeInternal_(oldKey, useLocalStorage);
-      return this.setInternal_(newKey, value, useLocalStorage);
+      this.removeInternal_(oldKey, useLocalStorage);
+      this.setInternal_(newKey, value, useLocalStorage);
     } else {
-      return this.setInternal_(oldKey, value, useLocalStorage);
+      this.setInternal_(oldKey, value, useLocalStorage);
     }
   }
 
@@ -111,37 +92,33 @@ export class Storage {
     finalKey: string,
     value: string,
     useLocalStorage: boolean
-  ): Promise<void> {
-    this.values_[finalKey] = Promise.resolve(value);
-    return new Promise((resolve) => {
-      const storage = useLocalStorage
-        ? this.win_.localStorage
-        : this.win_.sessionStorage;
-      if (storage) {
-        try {
-          storage.setItem(finalKey, value);
-        } catch (e) {
-          // Ignore error.
-        }
+  ): void {
+    const storage = useLocalStorage
+      ? this.win.localStorage
+      : this.win.sessionStorage;
+    if (storage) {
+      try {
+        storage.setItem(finalKey, value);
+      } catch (e) {
+        // Ignore error.
       }
-      resolve();
-    });
+    }
   }
 
-  async remove(baseKey: string, useLocalStorage = false): Promise<void> {
+  remove(baseKey: string, useLocalStorage = false): void {
     // The old version of storage key without publication identifier.
     // To be deprecated in favor of the new version of key.
     const oldKey = this.getStorageKeyWithoutPublicationId_(baseKey);
     // The new version of storage key with publication identifier.
     const newKey = this.getStorageKeyMaybeWithPublicationId_(baseKey);
-    const valueWithNewKey = await this.getInternal_(newKey, useLocalStorage);
+    const valueWithNewKey = this.getInternal_(newKey, useLocalStorage);
 
     // If a value for the new key already exists, we use the new key even if the
     // experiment is deactivated in the current session.
     if (
       valueWithNewKey !== null ||
       isExperimentOn(
-        this.win_,
+        this.win,
         ExperimentFlags.ENABLE_PUBLICATION_ID_SUFFIX_FOR_STORAGE_KEY
       )
     ) {
@@ -150,24 +127,17 @@ export class Storage {
     return this.removeInternal_(oldKey, useLocalStorage);
   }
 
-  private removeInternal_(
-    finalKey: string,
-    useLocalStorage: boolean
-  ): Promise<void> {
-    delete this.values_[finalKey];
-    return new Promise((resolve) => {
-      const storage = useLocalStorage
-        ? this.win_.localStorage
-        : this.win_.sessionStorage;
-      if (storage) {
-        try {
-          storage.removeItem(finalKey);
-        } catch (e) {
-          // Ignore error.
-        }
+  private removeInternal_(finalKey: string, useLocalStorage: boolean): void {
+    const storage = useLocalStorage
+      ? this.win.localStorage
+      : this.win.sessionStorage;
+    if (storage) {
+      try {
+        storage.removeItem(finalKey);
+      } catch (e) {
+        // Ignore error.
       }
-      resolve();
-    });
+    }
   }
 
   /**
@@ -188,7 +158,7 @@ export class Storage {
     ) {
       return this.getStorageKeyWithoutPublicationId_(baseKey);
     }
-    const publicationId = this.pageConfig_.getPublicationId();
+    const publicationId = this.pageConfig.getPublicationId();
     return PREFIX + ':' + baseKey + ':' + publicationId;
   }
 }
