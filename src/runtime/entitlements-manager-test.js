@@ -359,11 +359,7 @@ describes.realWin('EntitlementsManager', (env) => {
   describe('fetching', () => {
     beforeEach(() => {
       // Expect empty cache.
-      storageMock
-        .expects('get')
-        .withExactArgs('ents')
-        .returns(null)
-        .atLeast(0);
+      storageMock.expects('get').withExactArgs('ents').returns(null).atLeast(0);
       storageMock
         .expects('get')
         .withExactArgs('toast')
@@ -2523,11 +2519,7 @@ describes.realWin('EntitlementsManager', (env) => {
         .callsFake(function () {
           toast = this;
         });
-      storageMock
-        .expects('get')
-        .withExactArgs('ents')
-        .returns(null)
-        .atLeast(0);
+      storageMock.expects('get').withExactArgs('ents').returns(null).atLeast(0);
       storageMock.expects('set').withArgs('ents').atLeast(0);
       storageMock
         .expects('get')
@@ -2542,9 +2534,8 @@ describes.realWin('EntitlementsManager', (env) => {
         .expects('get')
         .withExactArgs('toast')
         .returns((callback) => {
-            callback(value);
-          },
-        );
+          callback(value);
+        });
     }
 
     function expectGetIsReadyToPayToBeCalled(value) {
