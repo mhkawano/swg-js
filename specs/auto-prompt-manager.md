@@ -34,6 +34,8 @@ Triggers the display of the auto prompt if preconditions are met.
 | `alwaysShow` | `boolean` | `false` | If true, overrides all display rules (capping, entitlements) for preview purposes. |
 | `isClosable` | `boolean` | `false` | Whether the prompt can be closed by the user. |
 | `contentType` | `ContentType` | Required | Content type (`OPEN` or `CLOSED`). |
+| `triggerMode` | `TriggerMode` | `DEFAULT` | Trigger mode (`DEFAULT` or `IDLE`). |
+| `idleTimeoutMs` | `number` | `5000` | Idle timeout in ms (only used for `IDLE` mode). |
 
 ---
 

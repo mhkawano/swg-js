@@ -3688,6 +3688,44 @@ describes.realWin('AutoPromptManager', (env) => {
       });
     });
 
+    it('should show the CTA after the specified idle timeout if triggerMode is IDLE', async () => {
+      const uiPredicates = new UiPredicates(/* canDisplayAutoPrompt */ true);
+      const clientConfig = new ClientConfig({
+        uiPredicates,
+        useUpdatedOfferFlows: true,
+      });
+      getClientConfigExpectation.resolves(clientConfig).once();
+      getArticleExpectation
+        .resolves({
+          audienceActions: {
+            actions: [SURVEY_INTERVENTION],
+            engineId: '123',
+          },
+          actionOrchestration: {
+            interventionFunnel: {
+              interventions: [
+                {
+                  configId: 'survey_config_id',
+                  type: 'TYPE_REWARDED_SURVEY',
+                  closability: 'DISMISSIBLE',
+                },
+              ],
+            },
+          },
+        })
+        .once();
+
+      winMock
+        .expects('setTimeout')
+        .withExactArgs(sandbox.match.any, 5000)
+        .once();
+
+      await autoPromptManager.showAutoPrompt({
+        triggerMode: 'idle',
+        idleTimeoutMs: 5000,
+      });
+    });
+
     it(`should set isInDevMode_ to false`, async () => {
       await autoPromptManager.showAutoPrompt({});
 

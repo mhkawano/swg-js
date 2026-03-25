@@ -167,6 +167,13 @@ export interface ShowAutoPromptParams {
   alwaysShow?: boolean;
   isClosable?: boolean;
   contentType: ContentType;
+  triggerMode?: TriggerMode;
+  idleTimeoutMs?: number;
+}
+
+export enum TriggerMode {
+  DEFAULT = 'default',
+  IDLE = 'idle',
 }
 
 /**
@@ -415,7 +422,40 @@ export class AutoPromptManager {
 
     this.promptIsFromCtaButton_ = false;
     this.configId_ = potentialAction?.configurationId;
-    // Add display delay to dismissible prompts.
+    if (params.triggerMode === TriggerMode.IDLE) {
+      const idleTimeoutMs = params.idleTimeoutMs || 5000;
+      let idleTimer: any;
+      const win = this.deps_.win();
+      const events = ['click', 'scroll', 'keydown', 'touchstart'];
+
+      const cleanup = () => {
+        events.forEach((event) => {
+          win.removeEventListener(event, onActivity);
+        });
+        if (idleTimer) {
+          this.deps_.win().clearTimeout(idleTimer);
+        }
+      };
+
+      const triggerAndCleanup = () => {
+        cleanup();
+        promptFn();
+      };
+
+      const onActivity = () => {
+        this.deps_.win().clearTimeout(idleTimer);
+        idleTimer = this.deps_.win().setTimeout(triggerAndCleanup, idleTimeoutMs);
+      };
+
+      events.forEach((event) => {
+        win.addEventListener(event, onActivity, {passive: true});
+      });
+
+      idleTimer = this.deps_.win().setTimeout(triggerAndCleanup, idleTimeoutMs);
+      return;
+    }
+
+    // Default DELAY behavior
     const displayDelayMs = this.isClosable_
       ? (clientConfig?.autoPromptConfig?.clientDisplayTrigger
           ?.displayDelaySeconds || 0) * SECOND_IN_MILLIS
