@@ -44,8 +44,9 @@ function gisCallback(response) {
   log(`gisCallback ${JSON.stringify(response)}`);
 }
 
-function initRrm() {
+function initRrms() {
   const isAccessibleForFree = document.getElementById('isAccessibleForFree').checked;
+  const productId = document.getElementById('productId').value;
   (self.SWG_BASIC = self.SWG_BASIC || []).push((basicSubscriptions) => {
     basicSubscriptions.setOnEntitlementsResponse((response) => {
       log(`Entitlements response: ${JSON.stringify(response)}`);
@@ -53,7 +54,7 @@ function initRrm() {
     basicSubscriptions.init({
       type: "NewsArticle",
       isPartOfType: ["Product"],
-      isPartOfProductId: "CAowwoSCAQ:basic",
+      isPartOfProductId: productId,
       isAccessibleForFree: isAccessibleForFree,
       clientOptions: {
         theme: "light",
@@ -62,7 +63,120 @@ function initRrm() {
       gisInterop: true,
     });
   });
-  log(`Called initRrm with isAccessibleForFree: ${isAccessibleForFree}`);
+  log(`Called initRrms with isAccessibleForFree: ${isAccessibleForFree} and productId: ${productId}`);
+}
+
+function addResultRow(type, result) {
+  const table = document.getElementById("resultTable");
+  const row = document.createElement('tr');
+  let html;
+  if (type == 'TYPE_REGISTRATION_WALL') {
+    html = `
+            <td scope="col">${result.configurationId}</td>
+            <td scope="col">${type}</td>
+            <td scope="col">${result.data.email}</td>
+            <td scope="col">${result.data.displayName}</td>
+            <td scope="col">${result.data.givenName}</td>
+            <td scope="col">${result.data.familyName}</td>
+          `;
+  } else {
+    html = `
+            <td scope="col">${result.configurationId}</td>
+            <td scope="col">${type}</td>
+          `;
+  }
+  row.innerHTML = html;
+  table.appendChild(row);
+}
+
+function addInterventionRow(intervention) {
+  const table = document.getElementById("interventionTable");
+  const row = document.createElement('tr');
+  const html = `
+          <td scope="col"><button>Show</button></td>
+          <td scope="col">${intervention.type}</td>
+          <td scope="col">${intervention.configurationId}</td>
+        `;
+  row.innerHTML = html;
+  const button = row.getElementsByTagName('button')[0];
+  button.onclick = () => {
+    const isClosable = document.getElementById("isClosable").checked;
+    const suppressToast = document.getElementById("suppressToast").checked;
+    const onAlternateAction = document.getElementById("onAlternateAction").checked;
+    const onSignIn = document.getElementById("onSignIn").checked;
+    intervention.show({
+      isClosable,
+      onResult: (result) => addResultRow(intervention.type, result),
+      suppressToast,
+      onAlternateAction: onAlternateAction ? () => alert('buy flow launched') : null,
+      onSignIn: onSignIn ? () => alert('sign in flow launched') : null,
+    });
+  }
+  table.appendChild(row);
+}
+
+function initRrme() {
+  const html = `
+    <style>
+      table {
+        width: 100%;
+      }
+      caption  {
+        font-size: 200%;
+      }
+    </style>
+    <input type="checkbox" id="isClosable" name="scales" checked />
+    <label for="isClosable">isClosable</label>
+    </input>
+    <input type="checkbox" id="suppressToast" name="scales" checked />
+    <label for="suppressToast">suppressToast</label>
+    </input>
+    <input type="checkbox" id="onAlternateAction" name="scales" checked />
+    <label for="onAlternateAction">onAlternateAction</label>
+    </input>
+    <input type="checkbox" id="onSignIn" name="scales" checked />
+    <label for="onSignIn">onSignIn</label>
+    </input>
+    </div>
+    <table>
+      <caption>Available Interventions</caption>
+      <thead>
+        <tr>
+          <th scope="col">Activate</th>
+          <th scope="col">Type</th>
+          <th scope="col">ID</th>
+        </tr>
+      </thead>
+      <tbody id="interventionTable">
+      </tbody>
+    </table>
+    <br />
+    <table>
+      <caption>Intervention Results</caption>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Type</th>
+        </tr>
+      </thead>
+      <tbody id="resultTable">
+      </tbody>
+    </table>
+  `;
+  document.getElementById('availableInterventions').innerHTML = html;
+
+  const isAccessibleForFree = document.getElementById('isAccessibleForFree').checked;
+  const productId = document.getElementById('productId').value;
+  (self.SWG = self.SWG || []).push(async (subscriptions) => {
+    subscriptions.setOnEntitlementsResponse((response) => {
+      log(`Entitlements response: ${JSON.stringify(response)}`);
+    });
+    subscriptions.configure({ gisInterop: true, });
+    subscriptions.init(productId);
+
+    const availableInterventions = await subscriptions.getAvailableInterventions();
+    availableInterventions.forEach(addInterventionRow);
+  });
 }
 
 function showOneTap() {
@@ -75,9 +189,11 @@ function addIframe() {
 
   const url = new URL(window.location.href);
   url.searchParams.set('framed', '1');
-  url.protocol = 'http:';
-  url.port = '8000';
-  url.hostname = url.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
+  if (document.getElementById('crossOrigin').checked && url.hostname === 'localhost') {
+    url.protocol = 'http:';
+    url.port = '8000';
+    url.hostname = '127.0.0.1';
+  }
   iframe.src = url.toString();
   iframe.style.width = '100%';
   iframe.style.height = '400px';
@@ -93,4 +209,10 @@ function log(msg) {
   div.textContent = msg;
   logDiv.appendChild(div);
   logDiv.scrollTop = logDiv.scrollHeight;
+}
+
+function clearLocalStorage() {
+  localStorage.clear();
+  sessionStorage.clear();
+  log(`Cleared localStorage and sessionStorage`);
 }

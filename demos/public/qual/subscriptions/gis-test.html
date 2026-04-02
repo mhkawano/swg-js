@@ -4,27 +4,57 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GIS Test - Swgjs Demos</title>
-  <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
+  <title>RRM / One Tap Demo</title>
   <script async type="application/javascript" src="/examples/sample-pub/redirect-to/swg-basic.js"></script>
+  <script subscriptions-control="manual" async type="application/javascript"
+    src="/examples/sample-pub/redirect-to/swg.js"></script>
   <script src="https://accounts.sandbox.google.com/gsi/client" async></script>
   <script src="gis-test.js"></script>
 </head>
 
 <body onload="init()">
   <label>
+    Product ID:
+    <input type="text" id="productId" list="productIdList">
+    <datalist id="productIdList">
+      <option value="CAowwoSCAQ:basic" label="RRM Funnel Subscription (Qual)">
+      <option value="CAow0oSCAQ:openaccess" label="RRM Funnel Contribution (Qual)">
+      <option value="CAow0cGDAQ:openaccess" label="RRM Funnel Premonetization (Qual)">
+      <option value="CAowmrOJAQ:openaccess" label="rrme test">
+    
+      <option value="CAowqYeKAQ:basic" label="Bug bash - Michael, subscription 1">
+      <option value="CAowuYeKAQ:basic" label="Bug bash - Michael, subscription 2">
+    
+      <option value="CAowyYeKAQ:openaccess" label="Bug bash - Michael, contribution 1">
+      <option value="CAowyoeKAQ:openaccess" label="Bug bash - Michael, contribution 2">
+    
+      <option value="CAowuoeKAQ:openaccess" label="Bug bash - Michael, non-monetization 1">
+      <option value="CAowu4eKAQ:openaccess" label="Bug bash - Michael, non-monetization 2">
+    
+      <option value="CAowy4eKAQ:openaccess" label="Bug bash - Michael, enterprise 1">
+      <option value="CAowvIeKAQ:openaccess" label="Bug bash - Michael, enterprise 2">
+    </datalist>
+    </label>
+    <label>
     isAccessibleForFree:
-    <input type="checkbox" id="isAccessibleForFree" checked>
+    <input type="checkbox" id="isAccessibleForFree">
   </label>
+  <label>
+    cross-origin:
+    <input type="checkbox" id="crossOrigin">
+  </label>
+
   <br>
-  <button onclick="initRrm()">Init RRM</button>
+  <button onclick="initRrms()">Init RRM:S</button>
+  <button onclick="initRrme()">Init RRM:E</button>
   <button onclick="initGis()">Init GIS</button>
   <button onclick="showOneTap()">Show One Tap</button>
   <button onclick="addIframe()">Add Iframe</button>
+  <button onclick="clearLocalStorage()">Clear localStorage</button>
   <div id="gisButton"></div>
   <div id="iframeContainer"></div>
+  <div id="availableInterventions"></div>
   <div id="gisLog"></div>
-
 </body>
 
 </html>
